@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { PokemonApi } from "../api/Pokemon";
 import { Link } from "react-router-dom";
 
@@ -7,16 +7,64 @@ const pokemonApi = new PokemonApi();
 function List() {
   const dammyImageUrl = "https://placehold.jp/3d4070/ffffff/150x150.png?text=";
 
+  // loading state
   const [isLoading, setIsLoading] = useState(false);
+  // pokemon list data
   const [pokemonList, setPokemonList] = useState([]);
+  // pagination data
+  const [pagination, setPagination] = useState({
+    previous: null,
+    next: null,
+  });
+
+  // pagination disabled state
+  const isPreviousDisabled = useMemo(() => {
+    return pagination.previous === null;
+  }, [pagination.previous]);
+
+  const isNextDisabled = useMemo(() => {
+    return pagination.next === null;
+  }, [pagination.next]);
+
+  // pagination handlers
+  const handlePrevious = () => {
+    console.log("previous");
+    // v2/以降の文字列取得したい
+    const url = pagination.previous.split("v2/")[1];
+    fetchPaginationData(url);
+  };
+  const handleNext = () => {
+    console.log("next");
+    const url = pagination.next.split("v2/")[1];
+    fetchPaginationData(url);
+  };
+
+  // pagination data fetch process
+  const fetchPaginationData = async (url) => {
+    setIsLoading(true);
+
+    const result = await pokemonApi.getPokemonList(url);
+
+    setFetchData(result);
+    setIsLoading(false);
+  };
+
+  const setFetchData = (result) => {
+    setPokemonList(result.results);
+    setPagination({
+      previous: result.previous,
+      next: result.next,
+    });
+  };
 
   useEffect(() => {
     const fetchPokemonData = async () => {
       setIsLoading(true);
 
-      const result = await pokemonApi.getPokemonList();
+      const INITIAL_URL = "pokemon";
+      const result = await pokemonApi.getPokemonList(INITIAL_URL);
 
-      setPokemonList(result.results);
+      setFetchData(result);
       setIsLoading(false);
     };
     fetchPokemonData();
@@ -30,7 +78,7 @@ function List() {
         ) : (
           pokemonList && (
             <div>
-              <div className="text-1xl flex flex-wrap gap-5">
+              <div className="text-1xl flex flex-wrap gap-5 mb-5">
                 {pokemonList.map((pokemon) => (
                   <div
                     key={pokemon.name}
@@ -49,8 +97,36 @@ function List() {
                     </Link>
                   </div>
                 ))}
+              </div>
 
-                {/* TODO: pagination here */}
+              {/* TODO: pagination here */}
+              <div className="flex justify-center gap-2">
+                <button
+                  className={
+                    isPreviousDisabled
+                      ? "text-gray-400 cursor-not-allowed mr-10"
+                      : "text-blue-500 hover:text-blue-600 mr-10"
+                  }
+                  disabled={isPreviousDisabled}
+                  onClick={() => {
+                    handlePrevious();
+                  }}
+                >
+                  Previous
+                </button>
+                <button
+                  className={
+                    isNextDisabled
+                      ? "text-gray-400 cursor-not-allowed"
+                      : "text-blue-500 hover:text-blue-600"
+                  }
+                  disabled={isNextDisabled}
+                  onClick={() => {
+                    handleNext();
+                  }}
+                >
+                  Next
+                </button>
               </div>
             </div>
           )
