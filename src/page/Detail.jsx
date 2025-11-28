@@ -1,9 +1,20 @@
+import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { PokemonApi } from "../api/Pokemon";
+
+const pokemonApi = new PokemonApi();
 
 function Detail() {
   const { name } = useParams();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const fetchPokemonDetailData = async () => {
+      const result = await pokemonApi.getPokemonDetail(name);
+      console.log(result);
+    };
+    fetchPokemonDetailData();
+  }, [name]);
   return (
     <>
       <div>
