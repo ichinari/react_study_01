@@ -18,7 +18,7 @@ export class PokemonApi extends ApiClient {
     super(pokeApiUrl, {});
   }
 
-  async getPokemonList() {
-    return await this.get<GetPokemonListType>("pokemon");
+  async getPokemonList(url) {
+    return await this.get<GetPokemonListType>(url);
   }
 }
