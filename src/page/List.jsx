@@ -24,27 +24,36 @@ function List() {
 
   return (
     <>
-      <div>
+      <div className="px-10 py-10">
         {isLoading ? (
           <div>Loading...</div>
         ) : (
-          <div className="text-1xl flex flex-wrap gap-5">
-            {pokemonList.map((pokemon) => (
-              <div
-                key={pokemon.name}
-                className="w-40 border-2 border-gray-300 rounded-md p-5 text-center grid gap-y-3"
-              >
-                <img src={dammyImageUrl + pokemon.name} alt={pokemon.name} />
-                <p className="text-1xl font-bold">{pokemon.name}</p>
-                <Link
-                  to={`/pokemon/${pokemon.name}`}
-                  className="text-sm text-blue-500 hover:text-blue-600"
-                >
-                  detail here
-                </Link>
+          pokemonList && (
+            <div>
+              <div className="text-1xl flex flex-wrap gap-5">
+                {pokemonList.map((pokemon) => (
+                  <div
+                    key={pokemon.name}
+                    className="w-40 border-2 border-gray-300 rounded-md p-5 text-center grid gap-y-3"
+                  >
+                    <img
+                      src={dammyImageUrl + pokemon.name}
+                      alt={pokemon.name}
+                    />
+                    <p className="text-1xl font-bold">{pokemon.name}</p>
+                    <Link
+                      to={`/pokemon/${pokemon.name}`}
+                      className="text-sm text-blue-500 hover:text-blue-600"
+                    >
+                      detail here
+                    </Link>
+                  </div>
+                ))}
+
+                {/* TODO: pagination here */}
               </div>
-            ))}
-          </div>
+            </div>
+          )
         )}
       </div>
     </>
