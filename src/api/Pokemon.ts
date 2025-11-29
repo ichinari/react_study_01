@@ -18,11 +18,11 @@ export class PokemonApi extends ApiClient {
     super(pokeApiUrl, {});
   }
 
-  async getPokemonList(url) {
-    return await this.get<GetPokemonListType>(url);
+  async getPokemonList(url, signal?: AbortSignal) {
+    return await this.get<any>(url, signal);
   }
 
-  async getPokemonDetail(name) {
-    return await this.get<GetPokemonDetailType>(`pokemon/${name}`);
+  async getPokemonDetail(name, signal?: AbortSignal) {
+    return await this.get<any>(`pokemon/${name}`, signal);
   }
 }
