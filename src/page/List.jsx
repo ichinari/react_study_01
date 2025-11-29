@@ -8,7 +8,7 @@ const pokemonApi = new PokemonApi();
 function List() {
   const dammyImageUrl = "https://placehold.jp/3d4070/ffffff/150x150.png?text=";
   const { setIsLoading } = useLoading();
-
+  const [searchData, setSearchData] = useState({ name: "" });
   // pokemon list data
   const [pokemonList, setPokemonList] = useState([]);
   // pagination data
@@ -26,6 +26,31 @@ function List() {
     return pagination.next === null;
   }, [pagination.next]);
 
+  const isNameSearchDisabled = useMemo(() => {
+    return searchData.name === "";
+  }, [searchData.name]);
+
+  // search handlers
+  const handleSearch = async () => {
+    try {
+      setIsLoading(true);
+
+      const result = await pokemonApi.getPokemonList(
+        `pokemon/${searchData.name}`
+      );
+
+      setPokemonList(result.forms);
+      setPagination({
+        previous: null,
+        next: null,
+      });
+
+      setIsLoading(false);
+    } catch (error) {
+      console.warn(error);
+      setIsLoading(false);
+    }
+  };
   // pagination handlers
   const handlePrevious = () => {
     setPokemonList([]);
@@ -97,6 +122,32 @@ function List() {
   return (
     <>
       <div className="px-10 py-10">
+        <div className="flex flex-col gap-2 mb-5">
+          <div className="text-1xl font-bold">pokemno name</div>
+          <div>
+            <input
+              type="text"
+              placeholder="name"
+              className="border-2 border-gray-300 rounded-md p-2 mr-2"
+              value={searchData.name}
+              onChange={(e) => setSearchData({ name: e.target.value })}
+            />
+            <button
+              className={
+                isNameSearchDisabled
+                  ? "text-gray-400 cursor-not-allowed rounded-md p-2 bg-gray-300"
+                  : "bg-blue-500 text-white rounded-md p-2 hover:bg-blue-600"
+              }
+              disabled={isNameSearchDisabled}
+              onClick={() => {
+                handleSearch();
+              }}
+            >
+              Search
+            </button>
+          </div>
+        </div>
+
         {pokemonList && (
           <div>
             <div className="text-1xl flex flex-wrap gap-5 mb-5">
@@ -117,7 +168,6 @@ function List() {
               ))}
             </div>
 
-            {/* TODO: pagination here */}
             <div className="flex justify-center gap-2">
               <button
                 className={
