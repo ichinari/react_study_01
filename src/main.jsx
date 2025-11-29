@@ -1,12 +1,15 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
-import AppRoutes from "./routers/router.jsx";
+import LoadingProvider from "./context/LoadingContext.jsx";
+import App from "./page/App.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
-      <AppRoutes />
+      <LoadingProvider>
+        <App />
+      </LoadingProvider>
     </BrowserRouter>
   </StrictMode>
 );
