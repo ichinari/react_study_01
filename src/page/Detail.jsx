@@ -2,21 +2,44 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { PokemonApi } from "../api/Pokemon";
 import DetailContent from "../components/DetailContent";
+import { useLoading } from "../context/useLoading";
 
 const pokemonApi = new PokemonApi();
 
 function Detail() {
   const { name } = useParams();
   const navigate = useNavigate();
+  const { setIsLoading } = useLoading();
 
   const [pokemonDetail, setPokemonDetail] = useState(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+
     const fetchPokemonDetailData = async () => {
-      const result = await pokemonApi.getPokemonDetail(name);
-      setPokemonDetail(result);
+      try {
+        setIsLoading(true);
+        const result = await pokemonApi.getPokemonDetail(
+          name,
+          controller.signal
+        );
+        setPokemonDetail(result);
+        setIsLoading(false);
+      } catch (error) {
+        // AbortErrorは無視（クリーンアップによる正常なキャンセル）
+        if (error.name !== "AbortError") {
+          console.error("Fetch error:", error);
+        }
+        setIsLoading(false);
+      }
     };
+
     fetchPokemonDetailData();
+
+    return () => {
+      controller.abort();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [name]);
   return (
     <>
