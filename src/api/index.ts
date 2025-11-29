@@ -11,8 +11,8 @@ export default class ApiClient {
     this.api = this.kyCreate();
   }
 
-  async get<T>(url: string): Promise<T> {
-    return this.api.get<T>(url).json();
+  async get<T>(url: string, signal?: AbortSignal): Promise<T> {
+    return this.api.get<T>(url, { signal }).json();
   }
 
   // TODO: dataの型を定義
